@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
-"""
-OT Sensor Simulator — Runs on PC_A (OT side)
-==============================================
-Generates simulated industrial sensor data (temperature, pressure, flow rate)
-and sends it as UDP packets to the IT network through the FPGA data diode.
-
-Usage:
-    python sensor_simulator.py [--ip <target_ip>] [--port <port>] [--interval <seconds>]
-
-Default: sends to 192.168.2.100:5000 every 1 second
-"""
+# sensor_simulator.py
+# generates simulated ot sensor data (temperature, pressure, etc.)
+# sends it as udp packets to the it network through the fpga data diode.
 
 import socket
 import json
@@ -19,9 +11,7 @@ import argparse
 import sys
 from datetime import datetime
 
-
 def generate_sensor_data():
-    """Generate realistic simulated sensor readings."""
     return {
         "timestamp": datetime.now().isoformat(),
         "sensor_id": f"OT-SENSOR-{random.randint(1, 5):03d}",
@@ -33,27 +23,26 @@ def generate_sensor_data():
             "humidity_pct": round(random.uniform(30.0, 90.0), 1),
         },
         "status": random.choice(["NORMAL", "NORMAL", "NORMAL", "WARNING", "CRITICAL"]),
-        "sequence_no": 0,  # Will be updated
+        "sequence_no": 0,
     }
 
-
 def main():
-    parser = argparse.ArgumentParser(description="OT Sensor Simulator for Data Diode Testing")
-    parser.add_argument("--ip", default="192.168.2.100", help="Target IP (IT side PC_B)")
-    parser.add_argument("--port", type=int, default=5000, help="Target UDP port")
-    parser.add_argument("--interval", type=float, default=1.0, help="Send interval (seconds)")
-    parser.add_argument("--count", type=int, default=0, help="Number of packets (0=infinite)")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ip", default="192.168.2.100")
+    parser.add_argument("--port", type=int, default=5000)
+    parser.add_argument("--interval", type=float, default=1.0)
+    parser.add_argument("--count", type=int, default=0)
     args = parser.parse_args()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    print(f"{'='*60}")
-    print(f"  OT Sensor Simulator — FPGA Data Diode Test")
-    print(f"{'='*60}")
-    print(f"  Target:   {args.ip}:{args.port}")
-    print(f"  Interval: {args.interval}s")
-    print(f"  Count:    {'infinite' if args.count == 0 else args.count}")
-    print(f"{'='*60}")
+    print("=" * 60)
+    print("  ot sensor simulator -> fpga data diode test")
+    print("=" * 60)
+    print(f"  target:   {args.ip}:{args.port}")
+    print(f"  interval: {args.interval}s")
+    print(f"  count:    {'infinite' if args.count == 0 else args.count}")
+    print("=" * 60)
     print()
 
     seq = 0
@@ -67,22 +56,19 @@ def main():
 
             status_char = "✓" if data["status"] == "NORMAL" else "⚠" if data["status"] == "WARNING" else "✗"
             print(f"  [{seq:06d}] {status_char} {data['sensor_id']} | "
-                  f"T={data['readings']['temperature_C']:5.1f}°C  "
-                  f"P={data['readings']['pressure_bar']:4.1f}bar  "
-                  f"F={data['readings']['flow_rate_lpm']:5.1f}L/min  "
-                  f"[{len(payload)}B sent]")
+                  f"t={data['readings']['temperature_C']:5.1f}C "
+                  f"p={data['readings']['pressure_bar']:4.1f}bar "
+                  f"[{len(payload)}b sent]")
 
             seq += 1
             if args.count > 0 and seq >= args.count:
                 break
-
             time.sleep(args.interval)
 
     except KeyboardInterrupt:
-        print(f"\n  Stopped. Total packets sent: {seq}")
+        print(f"\n  stopped. packets sent: {seq}")
     finally:
         sock.close()
-
 
 if __name__ == "__main__":
     main()
