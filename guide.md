@@ -1,6 +1,4 @@
-# fpga-based data diode — complete project guide
-
-## what exactly are we doing?
+# fpga-based data diode 
 
 ### the problem
 in industrial environments (factories, power plants, water treatment), there are two separate networks:
@@ -9,13 +7,6 @@ in industrial environments (factories, power plants, water treatment), there are
 
 these networks must be separated for security. if a hacker gets into the it network, they should never be able to reach back into the ot machines and cause damage.
 
-### what is a data diode?
-a data diode is like a one-way valve for network data:
-- data flows ot -> it (sensor readings, logs go to monitoring)
-- data cannot flow it -> ot (hackers can never reach back)
-- the fpga enforces this in hardware — not software (much more secure)
-
-### what we build
 we build this one-way valve using:
 1. **arty a7-100t** — our fpga board (xilinx artix-7)
 2. **lan8720 module** — a second ethernet port (because the arty only has one built-in)
@@ -25,7 +16,6 @@ we build this one-way valve using:
 
 ## the netherlands open source data diode (osdd)
 
-### what is it?
 the open source data diode (osdd) was created by the netherlands ministry of defence. 
 github: https://github.com/CyberInnovationHub-NLD/OpenSourceDataDiode
 
@@ -35,11 +25,10 @@ github: https://github.com/CyberInnovationHub-NLD/OpenSourceDataDiode
 3. phy_b has NO rx connection — its receive pins are simply not connected
 4. phy_b transmits the frame out to pc_b (it side)
 
-**the key security guarantee**: phy_b's rx pins are not connected to anything in the fpga. even if phy_b receives frames from pc_b, they have nowhere to go. this is a hardware-level guarantee — no software bug can break it.
+**the key security guarantee**: phy_b's rx pins are not connected to anything in the fpga. even if phy_b receives frames from pc_b, they have nowhere to go. this is a hardware-level guarantee - no software bug can break it.
 
 ---
 
-## how our project is different
 
 ### side-by-side comparison
 
